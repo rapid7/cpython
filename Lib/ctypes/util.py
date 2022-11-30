@@ -52,19 +52,43 @@ if os.name == "nt":
             clibname += 'd'
         return clibname+'.dll'
 
+    #: Overwrite the find_library call to return None if the path does not exist in the system or app dirs
+    from ctypes import windll, GetLastError, create_unicode_buffer, addressof
+    from ctypes.wintypes import BOOL, LPWSTR, UINT
+
+    MAX_PATH = 260
+
+    def check_error(res, func, args):
+        if res == 0:
+            raise WindowsError(GetLastError())
+
     def find_library(name):
         if name in ('c', 'm'):
             return find_msvcrt()
-        # See MSDN for the REAL search order.
-        for directory in os.environ['PATH'].split(os.pathsep):
-            fname = os.path.join(directory, name)
-            if os.path.isfile(fname):
-                return fname
-            if fname.lower().endswith(".dll"):
-                continue
-            fname = fname + ".dll"
-            if os.path.isfile(fname):
-                return fname
+        #: GetSystemDirectoryW
+        kernel32 = windll.kernel32
+        GetSystemDirectoryW = kernel32.GetSystemDirectoryW
+        GetSystemDirectoryW.argtypes = [LPWSTR, UINT]
+        GetSystemDirectoryW.restype = BOOL
+        GetSystemDirectoryW.errcheck = check_error
+
+        #: Build buffer for harboring system dir
+        system_dir = create_unicode_buffer(MAX_PATH)
+        GetSystemDirectoryW(LPWSTR(addressof(system_dir)), MAX_PATH)
+
+        #: Mimic search order here w/our implied restrictions
+        allowed_dirs = [os.getcwd(), system_dir[:].split('\x00\x00')[0]]
+
+        for allowed_dir in allowed_dirs:
+            lookup_dll_path, lookup_path = os.path.join(allowed_dir, "{}.dll".format(name)), os.path.join(allowed_dir, name)
+
+            #: Check dll ext path
+            if os.path.exists(lookup_dll_path):
+                return lookup_dll_path
+
+            #: Check raw file
+            elif os.path.exists(lookup_path):
+                return lookup_path
         return None
 
 elif os.name == "posix" and sys.platform == "darwin":
