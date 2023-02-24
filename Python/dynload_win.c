@@ -247,9 +247,7 @@ dl_funcptr _PyImport_FindSharedFuncptrWindows(const char *prefix,
            AddDllDirectory function. We add SEARCH_DLL_LOAD_DIR to
            ensure DLLs adjacent to the PYD are preferred. */
         Py_BEGIN_ALLOW_THREADS
-        hDLL = LoadLibraryExW(wpathname, NULL,
-                              LOAD_LIBRARY_SEARCH_DEFAULT_DIRS |
-                              LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
+        hDLL = LoadLibraryExW(wpathname, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
         Py_END_ALLOW_THREADS
 #if !USE_UNICODE_WCHAR_CACHE
         PyMem_Free(wpathname);

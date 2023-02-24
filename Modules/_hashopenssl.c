@@ -30,14 +30,14 @@
 #include "pycore_strhex.h"        // _Py_strhex()
 
 /* EVP is the preferred interface to hashing in OpenSSL */
-#include <openssl/evp.h>
-#include <openssl/hmac.h>
-#include <openssl/crypto.h>
+#include "openssl/evp.h"
+#include "openssl/hmac.h"
+#include "openssl/crypto.h"
 /* We use the object interface to discover what hashes OpenSSL supports. */
-#include <openssl/objects.h>
-#include <openssl/err.h>
+#include "openssl/objects.h"
+#include "openssl/err.h"
 
-#include <openssl/crypto.h>       // FIPS_mode()
+#include "openssl/crypto.h"       // FIPS_mode()
 
 #ifndef OPENSSL_THREADS
 #  error "OPENSSL_THREADS is not defined, Python requires thread-safe OpenSSL"

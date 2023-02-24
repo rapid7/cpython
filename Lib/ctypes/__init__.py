@@ -360,12 +360,6 @@ class CDLL(object):
         if _os.name == "nt":
             if winmode is not None:
                 mode = winmode
-            else:
-                import nt
-                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
-                if '/' in name or '\\' in name:
-                    self._name = nt._getfullpathname(self._name)
-                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
 
         class _FuncPtr(_CFuncPtr):
             _flags_ = flags
