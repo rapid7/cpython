@@ -1,0 +1,16 @@
+---
+info:
+  title: Cpython
+  description: This is the fork of the cpython repo so that we can create custom cpython
+    builds with different openssl versions.
+  x-cortex-git:
+    github:
+      alias: r7org
+      repository: rapid7/cpython
+  x-cortex-tag: cpython
+  x-cortex-type: service
+  x-cortex-domain-parents:
+  - tag: endpoint-on-premise
+openapi: 3.0.1
+servers:
+- url: "/"
